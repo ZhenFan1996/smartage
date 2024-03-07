@@ -56,7 +56,7 @@ def kill_process(p):
     p.terminate()  
     p.wait()  
 
-def record(time_out_seconds):
+def record(timeout_seconds):
     file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
     command = [
         'k4arecorder',
