@@ -89,6 +89,7 @@ def record(timeout_seconds, callback=None):
 
     if callback:
         callback()  
+        set_recording_state(False)
         time.sleep(150)
 
 if __name__ == "__main__":
