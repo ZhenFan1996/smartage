@@ -75,6 +75,6 @@ def record(time_out_seconds):
     timer.start()
 
 if __name__ == "__main__":
-    print('test')
     idx = find_camera_vendor_product('045e', '097d')
+    print(idx)
     motion_detection(idx,120)
