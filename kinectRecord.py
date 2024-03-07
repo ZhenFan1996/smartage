@@ -19,6 +19,7 @@ def find_camera_vendor_product(vendor_id, product_id):
 def motion_detection(device_idx,time):
     cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
+    true_count = 0
     while True:
         now = datetime.datetime.now()
         hour= now.hour
@@ -36,7 +37,7 @@ def motion_detection(device_idx,time):
                 continue
             motion_detected = True
             break
-        true_count = 0
+        
         if motion_detected and now.hour >= 6 and now.hour <= 22:
             true_count += 1
             if true_count >= 20:  
