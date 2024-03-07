@@ -57,7 +57,7 @@ def kill_process(p):
     p.wait()  
 
 def record(time_out_seconds):
-    file_path = f"/mnt/myexternaldrive/video-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
+    file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
     command = [
         'k4arecorder',
         '-d', 'WFOV_UNBINNED',
