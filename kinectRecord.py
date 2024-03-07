@@ -23,12 +23,12 @@ def motion_detection(device_idx,time):
         now = datetime.datetime.now()
         hour= now.hour
         ret, frame = cap.read()
+        print('test 1')
         if not ret:
             break
         fg_mask = background_subtractor.apply(frame)
         fg_mask = cv2.erode(fg_mask, None, iterations=1)
         fg_mask = cv2.dilate(fg_mask, None, iterations=3)
-
         contours, _ = cv2.findContours(fg_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         motion_detected = False
@@ -38,7 +38,7 @@ def motion_detection(device_idx,time):
         motion_detected = True
         break
         true_count = 0
-
+         print('test 2')
         if motion_detected and now.hour >= 6 and now.hour <= 22:
             true_count += 1
             if true_count >= 20:  
