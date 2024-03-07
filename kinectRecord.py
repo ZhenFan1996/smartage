@@ -109,4 +109,4 @@ def record(timeout_seconds, device_idx, camera_delay=5):
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
     print(idx)
-    motion_detection(idx, 30)
+    motion_detection(idx, 120)
