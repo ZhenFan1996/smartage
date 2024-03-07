@@ -66,13 +66,6 @@ def set_recording_state(state):
     is_recording = state
     print(f"Recording state set to {is_recording}")
 
-def kill_process(p):
-    p.poll()
-    if p.returncode is None:  
-        p.terminate()  
-        p.wait(timeout=10)  
-    else:
-        print("Process completed without force termination.")
 
 
 def wait_and_reconnect(camera_delay):
@@ -99,7 +92,7 @@ def record(timeout_seconds, device_idx, camera_delay=5):
 
     def callback():
         print("Recording timeout reached. Executing callback.")
-        kill_process(process)
+        process.wait(timeout = 10)
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
 
@@ -113,4 +106,4 @@ def record(timeout_seconds, device_idx, camera_delay=5):
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
     print(idx)
-    motion_detection(idx, 120)
+    motion_detection(idx, 30)
