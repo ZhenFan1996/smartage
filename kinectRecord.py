@@ -5,6 +5,10 @@ import datetime
 import os
 import pyudev
 import threading
+
+
+is_recording = False
+
 def find_camera_vendor_product(vendor_id, product_id):
     context = pyudev.Context()
     video_devices = [device for device in context.list_devices(subsystem='video4linux') 
@@ -16,13 +20,17 @@ def find_camera_vendor_product(vendor_id, product_id):
     min_index = min(int(device.device_node.rpartition('/')[-1][len('video'):]) for device in video_devices)
     return min_index
 
-def motion_detection(device_idx,time):
+def motion_detection(device_idx, time):
+    global is_recording
     cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
     true_count = 0
     while True:
+        if is_recording:  
+            time.sleep(1)  
+            continue
+
         now = datetime.datetime.now()
-        hour= now.hour
         ret, frame = cap.read()
         if not ret:
             break
@@ -38,13 +46,14 @@ def motion_detection(device_idx,time):
             motion_detected = True
             break
         
-        if motion_detected and now.hour >= 6 and now.hour <= 22:
+        if motion_detected and 6 <= now.hour <= 22:
             true_count += 1
             if true_count >= 20:  
                 print("True - Motion Detected")
                 print('--------Start Record----------')
+                is_recording = True
                 cap.release()
-                record(time)
+                record(time, lambda: set_recording_state(False))  
                 cap = cv2.VideoCapture(device_idx)
         else:
             true_count = 0  
@@ -52,11 +61,15 @@ def motion_detection(device_idx,time):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+def set_recording_state(state):
+    global is_recording
+    is_recording = state
+
 def kill_process(p):
     p.terminate()  
     p.wait()  
 
-def record(timeout_seconds):
+def record(timeout_seconds, callback=None):
     file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
     command = [
         'k4arecorder',
@@ -66,14 +79,18 @@ def record(timeout_seconds):
         '-l', str(timeout_seconds),
         '--imu', 'OFF',
         file_path
-]
+    ]
 
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     timer = threading.Timer(timeout_seconds, kill_process, [process])
     timer.start()
+    timer.join()  
+
+    if callback:
+        callback()  
 
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
     print(idx)
-    motion_detection(idx,120)
+    motion_detection(idx, 120)
