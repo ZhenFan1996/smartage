@@ -89,6 +89,7 @@ def record(timeout_seconds, callback=None):
 
     if callback:
         callback()  
+        time.sleep(150)
 
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
