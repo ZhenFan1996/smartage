@@ -64,13 +64,22 @@ def motion_detection(device_idx, time):
 def set_recording_state(state):
     global is_recording
     is_recording = state
+    print(f"Recording state set to {is_recording}")
 
 def kill_process(p):
     p.terminate()  
     p.wait()  
 
-def record(timeout_seconds, callback=None):
+
+def wait_and_reconnect(camera_delay):
+    print(f"Waiting for {camera_delay} seconds to allow camera reconnection...")
+    time.sleep(camera_delay)
+    print("Attempting to reconnect camera...")
+
+def record(timeout_seconds, device_idx, camera_delay=5):
+    global is_recording
     file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
+    print(f"Starting recording to {file_path}")
     command = [
         'k4arecorder',
         '-d', 'WFOV_UNBINNED',
@@ -82,17 +91,22 @@ def record(timeout_seconds, callback=None):
     ]
 
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print("Recording process started.")
 
-    timer = threading.Timer(timeout_seconds, kill_process, [process])
-    timer.start()
-    timer.join()  
-
-    if callback:
-        callback()  
+    def callback():
+        print("Recording timeout reached. Executing callback.")
+        kill_process(process)
         set_recording_state(False)
-        time.sleep(150)
+        wait_and_reconnect(camera_delay, device_idx)
+
+    timer = threading.Timer(timeout_seconds, callback)
+    timer.start()
+    is_recording = True
+    timer.join()  
+    print("Callback and timer finished.")
+
 
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
     print(idx)
-    motion_detection(idx, 120)
+    motion_detection(idx, 30)
