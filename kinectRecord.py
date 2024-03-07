@@ -16,7 +16,7 @@ def find_camera_vendor_product(vendor_id, product_id):
     min_index = min(int(device.device_node.rpartition('/')[-1][len('video'):]) for device in video_devices)
     return min_index
 
-def motion_detection(device_idx):
+def motion_detection(device_idx,time):
     cap = cv2.VideoCapture(index)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
     while True:
@@ -35,7 +35,7 @@ def motion_detection(device_idx):
             if true_count >= 20:  
                 print("True - Motion Detected")
                 print('--------Start Record----------')
-                record(200)
+                record(time)
                 cap.release()
         else:
             true_count = 0  
@@ -63,3 +63,7 @@ def record(time_out_seconds):
 
     timer = threading.Timer(timeout_seconds, kill_process, [process])
     timer.start()
+
+if __name__ == "__main__":
+    idx = find_camera_vendor_product('045d', '097d')
+    motion_detection(idx,120)
