@@ -86,13 +86,13 @@ def record(timeout_seconds, device_idx, camera_delay=5):
         '--imu', 'OFF',
         file_path
     ]
-
+    print(command)
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     print("Recording process started.")
 
     def callback():
         print("Recording timeout reached. Executing callback.")
-        process.wait(timeout = 10)
+        process.wait()
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
 
