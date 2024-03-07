@@ -74,7 +74,7 @@ def wait_and_reconnect(camera_delay):
     time.sleep(camera_delay)
     print("Attempting to reconnect camera...")
 
-def record(timeout_seconds, device_idx, camera_delay=5):
+def record(timeout_seconds, device_idx, camera_delay=20):
     global is_recording
     file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
     print(f"Starting recording to {file_path}")
@@ -108,4 +108,4 @@ def record(timeout_seconds, device_idx, camera_delay=5):
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
     print(idx)
-    motion_detection(idx, 30)
+    motion_detection(idx, 1200)
