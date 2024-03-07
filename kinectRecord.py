@@ -23,7 +23,6 @@ def motion_detection(device_idx,time):
         now = datetime.datetime.now()
         hour= now.hour
         ret, frame = cap.read()
-        print('test 1')
         if not ret:
             break
         fg_mask = background_subtractor.apply(frame)
