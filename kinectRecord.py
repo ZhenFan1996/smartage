@@ -93,7 +93,7 @@ def record(timeout_seconds, device_idx, camera_delay=20):
 
     def callback():
         print("Recording timeout reached. Executing callback.")
-        process.send_signal(signal.SIGQUIT)
+        process.send_signal(signal.SIGKILL)
         process.wait()
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
