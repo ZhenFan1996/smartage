@@ -46,7 +46,7 @@ def motion_detection(device_idx, time):
             motion_detected = True
             break
         
-        if motion_detected and 6 <= now.hour <= 22:
+        if motion_detected and 0 <= now.hour <= 24:
             true_count += 1
             if true_count >= 20:  
                 print("True - Motion Detected")
