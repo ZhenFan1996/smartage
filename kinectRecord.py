@@ -67,8 +67,12 @@ def set_recording_state(state):
     print(f"Recording state set to {is_recording}")
 
 def kill_process(p):
-    p.terminate()  
-    p.wait()  
+    p.poll()
+    if p.returncode is None:  
+        p.terminate()  
+        p.wait(timeout=10)  
+    else:
+        print("Process completed without force termination.")
 
 
 def wait_and_reconnect(camera_delay):
