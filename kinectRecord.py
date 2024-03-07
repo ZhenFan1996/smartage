@@ -28,7 +28,16 @@ def motion_detection(device_idx,time):
         fg_mask = background_subtractor.apply(frame)
         fg_mask = cv2.erode(fg_mask, None, iterations=1)
         fg_mask = cv2.dilate(fg_mask, None, iterations=3)
-        cnt = 0
+
+        contours, _ = cv2.findContours(fg_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        motion_detected = False
+        for contour in contours:
+            if cv2.contourArea(contour) < 3000:
+                continue
+        motion_detected = True
+        break
+        true_count = 0
 
         if motion_detected and now.hour >= 6 and now.hour <= 22:
             true_count += 1
