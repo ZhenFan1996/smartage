@@ -20,7 +20,7 @@ def find_camera_vendor_product(vendor_id, product_id):
     min_index = min(int(device.device_node.rpartition('/')[-1][len('video'):]) for device in video_devices)
     return min_index
 
-def motion_detection(device_idx, time):
+def motion_detection(device_idx,time_seconds):
     global is_recording
     cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
@@ -53,7 +53,7 @@ def motion_detection(device_idx, time):
                 print('--------Start Record----------')
                 is_recording = True
                 cap.release()
-                record(time, lambda: set_recording_state(False))  
+                record(time_seconds, lambda: set_recording_state(False))  
                 cap = cv2.VideoCapture(device_idx)
         else:
             true_count = 0  
