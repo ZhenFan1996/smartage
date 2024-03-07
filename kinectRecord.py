@@ -17,7 +17,7 @@ def find_camera_vendor_product(vendor_id, product_id):
     return min_index
 
 def motion_detection(device_idx,time):
-    cap = cv2.VideoCapture(index)
+    cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
     while True:
         now = datetime.datetime.now()
@@ -35,8 +35,9 @@ def motion_detection(device_idx,time):
             if true_count >= 20:  
                 print("True - Motion Detected")
                 print('--------Start Record----------')
-                record(time)
                 cap.release()
+                record(time)
+                cap = cv2.VideoCapture(device_idx)
         else:
             true_count = 0  
 
