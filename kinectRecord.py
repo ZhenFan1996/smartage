@@ -93,7 +93,7 @@ def record(timeout_seconds, device_idx, camera_delay=20):
 
     def callback():
         print("Recording timeout reached. Executing callback.")
-        process.send_signal(signal.SIGINT)
+        process.send_signal(signal.SIGQUIT)
         process.wait()
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
@@ -108,4 +108,4 @@ def record(timeout_seconds, device_idx, camera_delay=20):
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
     print(idx)
-    motion_detection(idx, 1200)
+    motion_detection(idx, 30)
