@@ -35,7 +35,8 @@ def motion_detection(device_idx,time):
         for contour in contours:
             if cv2.contourArea(contour) < 3000:
                 continue
-        motion_detected = True
+            motion_detected = True
+            break
         true_count = 0
         if motion_detected and now.hour >= 6 and now.hour <= 22:
             true_count += 1
