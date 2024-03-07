@@ -97,7 +97,7 @@ def record(timeout_seconds, device_idx, camera_delay=5):
         print("Recording timeout reached. Executing callback.")
         kill_process(process)
         set_recording_state(False)
-        wait_and_reconnect(camera_delay, device_idx)
+        wait_and_reconnect(camera_delay)
 
     timer = threading.Timer(timeout_seconds, callback)
     timer.start()
