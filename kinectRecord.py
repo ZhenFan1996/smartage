@@ -5,6 +5,7 @@ import datetime
 import os
 import pyudev
 import threading
+import signal
 
 
 is_recording = False
@@ -92,6 +93,7 @@ def record(timeout_seconds, device_idx, camera_delay=5):
 
     def callback():
         print("Recording timeout reached. Executing callback.")
+        process.send_signal(signal.SIGINT)
         process.wait()
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
