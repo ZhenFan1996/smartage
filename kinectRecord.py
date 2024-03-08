@@ -7,7 +7,11 @@ import pyudev
 import threading
 import signal
 import errno
+import tempfile
 
+
+RECORDER_MODEL = 0
+FIX_MODEL = 1
 is_recording = False
 
 def find_camera_vendor_product(vendor_id, product_id):
@@ -29,7 +33,7 @@ def set_highest_priority():
             print("Error: Setting highest priority requires elevated permissions.")
 
 
-def motion_detection(device_idx,time_seconds):
+def motion_detection(device_idx,time_seconds,file_path):
     global is_recording
     cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
@@ -54,18 +58,24 @@ def motion_detection(device_idx,time_seconds):
                 continue
             motion_detected = True
             break
-        
-        if motion_detected and 0 <= now.hour <= 24:
-            true_count += 1
-            if true_count >= 20:  
-                print("True - Motion Detected")
-                print('--------Start Record----------')
-                is_recording = True
-                cap.release()
-                record(time_seconds, lambda: set_recording_state(False))  
-                cap = cv2.VideoCapture(device_idx)
-        else:
-            true_count = 0  
+        try:
+            if motion_detected and 0 <= now.hour <= 24:
+                true_count += 1
+                if true_count >= 20:  
+                    print("True - Motion Detected")
+                    print('--------Start Record----------')
+                    is_recording = True
+                    cap.release()
+                    record(time_seconds,file_path)  
+                    cap = cv2.VideoCapture(device_idx)
+            else:
+                true_count = 0  
+        except Exception as e:
+            print('------Restart recorder-------')
+            fd, temp_path = tempfile.mkstemp(suffix='.mkv')
+            os.close(fd) 
+            record(5,temp_path,stop_model=FIX_MODEL)
+            os.remove(temp_path)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -82,9 +92,8 @@ def wait_and_reconnect(camera_delay):
     time.sleep(camera_delay)
     print("Attempting to reconnect camera...")
 
-def record(timeout_seconds, device_idx, camera_delay=20):
+def record(timeout_seconds, device_idx,file_path, camera_delay=10,stop_model = "recorder"):
     global is_recording
-    file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
     print(f"Starting recording to {file_path}")
     command = [
         'k4arecorder',
@@ -95,13 +104,15 @@ def record(timeout_seconds, device_idx, camera_delay=20):
         '--imu', 'OFF',
         file_path
     ]
-    print(command)
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,preexec_fn=set_highest_priority)
-    print("Recording process started.")
-
+    if stop_model == RECORDER_MODEL:
+        print("Recording process started.")
+    elif stop_model == FIX_MODEL:
+        print("Try to restart Camera")
     def callback():
         print("Recording timeout reached. Executing callback.")
-        ##process.send_signal(signal.SIGKILL)
+        if stop_model == RECORDER_MODEL:
+            process.send_signal(signal.SIGINT)
         process.wait()
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
@@ -116,4 +127,5 @@ def record(timeout_seconds, device_idx, camera_delay=20):
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
     print(idx)
-    motion_detection(idx, 30)
+    file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
+    motion_detection(idx, 30,file_path)
