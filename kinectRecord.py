@@ -42,7 +42,6 @@ def motion_detection(device_idx,time_seconds,file_path):
         if is_recording:  
             time.sleep(1)  
             continue
-
         now = datetime.datetime.now()
         ret, frame = cap.read()
         if not ret:
@@ -72,13 +71,17 @@ def motion_detection(device_idx,time_seconds,file_path):
                 true_count = 0  
         except Exception as e:
             print('------Restart recorder-------')
-            fd, temp_path = tempfile.mkstemp(suffix='.mkv')
-            os.close(fd) 
-            record(5,temp_path,stop_model=FIX_MODEL)
-            os.remove(temp_path)
+            fix_record()
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+def fix_record():
+     fd, temp_path = tempfile.mkstemp(suffix='.mkv')
+     os.close(fd) 
+     record(5,temp_path,stop_model=FIX_MODEL)
+     os.remove(temp_path)
+
 
 def set_recording_state(state):
     global is_recording
@@ -92,7 +95,7 @@ def wait_and_reconnect(camera_delay):
     time.sleep(camera_delay)
     print("Attempting to reconnect camera...")
 
-def record(timeout_seconds, device_idx,file_path, camera_delay=10,stop_model = "recorder"):
+def record(timeout_seconds,file_path, camera_delay=10,stop_model = "recorder"):
     global is_recording
     print(f"Starting recording to {file_path}")
     command = [
