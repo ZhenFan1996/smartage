@@ -6,7 +6,7 @@ import os
 import pyudev
 import threading
 import signal
-
+import errno
 
 is_recording = False
 
@@ -20,6 +20,14 @@ def find_camera_vendor_product(vendor_id, product_id):
         return -1  
     min_index = min(int(device.device_node.rpartition('/')[-1][len('video'):]) for device in video_devices)
     return min_index
+
+def set_highest_priority():
+    try:
+        os.nice(-20)
+    except OSError as e:
+        if e.errno == errno.EPERM:  
+            print("Error: Setting highest priority requires elevated permissions.")
+
 
 def motion_detection(device_idx,time_seconds):
     global is_recording
@@ -88,12 +96,12 @@ def record(timeout_seconds, device_idx, camera_delay=20):
         file_path
     ]
     print(command)
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,preexec_fn=set_highest_priority)
     print("Recording process started.")
 
     def callback():
         print("Recording timeout reached. Executing callback.")
-        process.send_signal(signal.SIGKILL)
+        ##process.send_signal(signal.SIGKILL)
         process.wait()
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
