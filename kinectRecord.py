@@ -95,7 +95,7 @@ def wait_and_reconnect(camera_delay):
     time.sleep(camera_delay)
     print("Attempting to reconnect camera...")
 
-def record(timeout_seconds,file_path, camera_delay=10,stop_model = "recorder"):
+def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODEL):
     global is_recording
     print(f"Starting recording to {file_path}")
     command = [
