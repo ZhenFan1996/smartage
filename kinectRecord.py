@@ -70,12 +70,14 @@ def motion_detection(time_seconds,file_path):
                     cap.release()
                     record(time_seconds,file_path)  
                     cap = cv2.VideoCapture(device_idx)
-                    time_count = 0
+                    true_count = 0
             else:
                 true_count = 0  
         except Exception as e:
             print('------Restart recorder-------')
             fix_record()
+            device_idx = find_camera_vendor_product('045e', '097d')
+            print(f"The device_idx is {device_idx}")
             continue
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
