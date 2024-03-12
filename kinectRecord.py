@@ -67,6 +67,7 @@ def motion_detection(device_idx,time_seconds,file_path):
                     cap.release()
                     record(time_seconds,file_path)  
                     cap = cv2.VideoCapture(device_idx)
+                    time_count = 0
             else:
                 true_count = 0  
         except Exception as e:
