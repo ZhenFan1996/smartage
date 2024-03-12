@@ -78,6 +78,8 @@ def motion_detection(time_seconds):
                 true_count = 0  
         except Exception as e:
             fix_record()
+            cap = cv2.VideoCapture(device_idx)
+            true_count = 0
             continue
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
