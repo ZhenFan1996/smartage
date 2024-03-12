@@ -35,6 +35,7 @@ def set_highest_priority():
 
 def motion_detection(device_idx,time_seconds,file_path):
     global is_recording
+    fix_record()
     cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
     true_count = 0
