@@ -72,6 +72,7 @@ def motion_detection(device_idx,time_seconds,file_path):
         except Exception as e:
             print('------Restart recorder-------')
             fix_record()
+            continue
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
