@@ -69,26 +69,29 @@ def motion_detection(time_seconds):
                     is_recording = True
                     cap.release()
                     file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
-                    record(time_seconds,file_path)  
+                    record(time_seconds,file_path)
+                    device_idx = find_camera_vendor_product('045e', '097d')
+                    if device_idx ==-1:
+                        fix_record()
                     cap = cv2.VideoCapture(device_idx)
                     true_count = 0
             else:
                 true_count = 0  
         except Exception as e:
-            print('------Restart recorder-------')
             fix_record()
-            device_idx = find_camera_vendor_product('045e', '097d')
-            print(f"The device_idx is {device_idx}")
             continue
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 def fix_record():
+     print('------Restart recorder-------')
      fd, temp_path = tempfile.mkstemp(suffix='.mkv')
      os.close(fd) 
      record(5,temp_path,stop_model=FIX_MODEL)
      os.remove(temp_path)
+     device_idx = find_camera_vendor_product('045e', '097d')
+     print(f"The device_idx is {device_idx}")
 
 
 def set_recording_state(state):
