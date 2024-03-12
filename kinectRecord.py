@@ -12,6 +12,7 @@ import tempfile
 
 RECORDER_MODEL = 0
 FIX_MODEL = 1
+device_idx = -1
 is_recording = False
 
 def find_camera_vendor_product(vendor_id, product_id):
@@ -34,7 +35,7 @@ def set_highest_priority():
 
 
 def motion_detection(time_seconds):
-    global is_recording
+    global is_recording,device_idx
     fix_record()
     cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
@@ -83,6 +84,7 @@ def motion_detection(time_seconds):
             break
 
 def fix_record():
+     global device_idx
      print('------Restart recorder-------')
      fd, temp_path = tempfile.mkstemp(suffix='.mkv')
      os.close(fd) 
