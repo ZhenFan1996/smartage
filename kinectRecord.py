@@ -33,9 +33,11 @@ def set_highest_priority():
             print("Error: Setting highest priority requires elevated permissions.")
 
 
-def motion_detection(device_idx,time_seconds,file_path):
+def motion_detection(time_seconds,file_path):
     global is_recording
     fix_record()
+    device_idx = find_camera_vendor_product('045e', '097d')
+    print(f"The device_idx is {device_idx}")
     cap = cv2.VideoCapture(device_idx)
     background_subtractor = cv2.createBackgroundSubtractorMOG2(history=120, varThreshold=150)
     true_count = 0
@@ -132,6 +134,5 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
 
 if __name__ == "__main__":
     idx = find_camera_vendor_product('045e', '097d')
-    print(idx)
     file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
-    motion_detection(idx, 30,file_path)
+    motion_detection(30,file_path)
