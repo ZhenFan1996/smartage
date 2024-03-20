@@ -93,7 +93,14 @@ def fix_record():
      record(5,temp_path,stop_model=FIX_MODEL)
      os.remove(temp_path)
      device_idx = find_camera_vendor_product('045e', '097d')
-     print(f"The device_idx is {device_idx}")
+     if device_idx == -1:
+        print("Camera not found. Attempting to reboot the computer...")
+        try:
+            subprocess.run(["sudo", "reboot"], check=True)
+        except Exception as e:
+            print(f"Failed to reboot: {e}")
+     else:
+        print(f"Camera found at index {device_idx}. No need to reboot.")
 
 
 def set_recording_state(state):
