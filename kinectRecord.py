@@ -129,7 +129,14 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
         print("Recording timeout reached. Executing callback.")
         if stop_model == RECORDER_MODEL:
             process.send_signal(signal.SIGINT)
-        process.wait()
+        try:
+            process.wait(timeout=300)
+        except subprocess.TimeoutExpired:
+            print("Process timed out. Terminating.")
+            process.terminate()
+            process.wait()
+            fix_record()
+            continue
         set_recording_state(False)
         wait_and_reconnect(camera_delay)
 
