@@ -153,5 +153,5 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
 
 
 if __name__ == "__main__":
-    idx = find_camera_vendor_product('045e', '097d')
+    print('------------Programm Start ---------')
     motion_detection(30)
