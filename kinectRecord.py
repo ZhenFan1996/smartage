@@ -121,7 +121,7 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
     global is_recording
     print(f"Starting recording to {file_path}")
     command = [
-        'k4arecorder',
+        '/usr/bin/k4arecorder',
         '-d', 'WFOV_UNBINNED',
         '-r', '15',
         '-c', '720p',
