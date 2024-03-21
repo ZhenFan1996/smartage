@@ -145,8 +145,8 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
             process.terminate()
             process.wait()
         set_recording_state(False)
-        print("stdout:", stdout.decode())
-        print("stderr:", stderr.decode())
+        print(stdout)
+        print(stderr)
         wait_and_reconnect(camera_delay)
 
     timer = threading.Timer(timeout_seconds, callback)
