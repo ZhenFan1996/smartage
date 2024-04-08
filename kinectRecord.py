@@ -139,7 +139,7 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
         if stop_model == RECORDER_MODEL:
             process.send_signal(signal.SIGINT)
         try:
-            stdout,stderr =  process.communicate(timeout=300)
+            stdout,stderr =  process.communicate(timeout=300+timeout_seconds)
         except subprocess.TimeoutExpired:
             print("Process timed out. Terminating.")
             process.terminate()
@@ -148,7 +148,7 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
         print(stdout)
         print(stderr)
         if 'error' in stdout:
-            print("Camera not found. Attempting to reboot the computer...")
+            print("Error in k4arecorder. Attempting to reboot the computer...")
             try:
                 subprocess.run(["sudo", "reboot"], check=True)
             except Exception as e:
@@ -164,4 +164,4 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
 
 if __name__ == "__main__":
     print('------------Programm Start ---------')
-    motion_detection(30)
+    motion_detection(7200)
