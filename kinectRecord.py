@@ -148,7 +148,6 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
             process.wait()
         set_recording_state(False)
         print(stdout)
-        print(stderr)
         if 'error' in stdout:
             print("Error in k4arecorder. Attempting to reboot the computer...")
             try:

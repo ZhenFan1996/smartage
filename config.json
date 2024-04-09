@@ -1,0 +1,10 @@
+{
+  "vendor_id": "045e",
+  "product_id": "097d",
+  "background_subtractor": {
+    "history": 120,
+    "varThreshold": 150
+  },
+  "contour_area_threshold": 3000,
+  "motion_detection_duration_seconds": 7200
+}
