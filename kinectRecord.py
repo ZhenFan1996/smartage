@@ -1,5 +1,3 @@
-#!/home/smartage5/anaconda3/bin python3
-
 import cv2
 import subprocess
 import time
@@ -10,7 +8,13 @@ import threading
 import signal
 import errno
 import tempfile
+import json
 
+with open('config.json', 'r') as file:
+    config = json.load(file)
+
+vendor_id = config["vendor_id"]
+product_id = config["product_id"]
 
 RECORDER_MODEL = 0
 FIX_MODEL = 1
@@ -57,7 +61,7 @@ def motion_detection(time_seconds):
 
         motion_detected = False
         for contour in contours:
-            if cv2.contourArea(contour) < 3000:
+            if cv2.contourArea(contour) < int(config["contour_area_threshold"]):
                 continue
             motion_detected = True
             break
@@ -71,7 +75,7 @@ def motion_detection(time_seconds):
                     cap.release()
                     file_path = f"/mnt/myexternaldrive/video-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.mkv"
                     record(time_seconds,file_path)
-                    device_idx = find_camera_vendor_product('045e', '097d')
+                    device_idx = find_camera_vendor_product(vendor_id, product_id)
                     if device_idx ==-1:
                         fix_record()
                     cap = cv2.VideoCapture(device_idx)
@@ -94,7 +98,7 @@ def fix_record():
      os.close(fd) 
      record(5,temp_path,stop_model=FIX_MODEL)
      os.remove(temp_path)
-     device_idx = find_camera_vendor_product('045e', '097d')
+     device_idx = find_camera_vendor_product(vendor_id, product_id)
      if device_idx == -1:
         print("Camera not found. Attempting to reboot the computer...")
         try:
@@ -109,8 +113,6 @@ def set_recording_state(state):
     global is_recording
     is_recording = state
     print(f"Recording state set to {is_recording}")
-
-
 
 def wait_and_reconnect(camera_delay):
     print(f"Waiting for {camera_delay} seconds to allow camera reconnection...")
@@ -164,4 +166,5 @@ def record(timeout_seconds,file_path, camera_delay=10,stop_model = RECORDER_MODE
 
 if __name__ == "__main__":
     print('------------Programm Start ---------')
-    motion_detection(7200)
+    duration_seconds = int(config["motion_detection_duration_seconds"])
+    motion_detection(duration_seconds)
