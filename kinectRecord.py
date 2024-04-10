@@ -101,6 +101,7 @@ def fix_record():
      device_idx = find_camera_vendor_product(vendor_id, product_id)
      if device_idx == -1:
         print("Camera not found. Attempting to reboot the computer...")
+        time.sleep(60)
         try:
             subprocess.run(["sudo", "reboot"], check=True)
         except Exception as e:
